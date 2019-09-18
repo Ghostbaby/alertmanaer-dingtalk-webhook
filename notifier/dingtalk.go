@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/yunlzheng/alertmanaer-dingtalk-webhook/model"
-	"github.com/yunlzheng/alertmanaer-dingtalk-webhook/transformer"
+	"github.com/ghostbaby/alertmanaer-dingtalk-webhook/model"
+	"github.com/ghostbaby/alertmanaer-dingtalk-webhook/transformer"
 )
 
 // Send send markdown message to dingtalk
@@ -23,6 +23,7 @@ func Send(notification model.Notification, defaultRobot string) (err error) {
 	if err != nil {
 		return
 	}
+	fmt.Println(string(data),robotURL)
 
 	var dingTalkRobotURL string
 
@@ -54,4 +55,5 @@ func Send(notification model.Notification, defaultRobot string) (err error) {
 	fmt.Println("response Headers:", resp.Header)
 
 	return
+
 }

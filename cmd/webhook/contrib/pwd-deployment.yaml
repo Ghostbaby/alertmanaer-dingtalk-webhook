@@ -1,0 +1,55 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alertmanager-dingtalk-webhook
+  namespace: monitoring
+  labels:
+    k8s-app: alertmanager-dingtalk-webhook
+spec:
+  type: NodePort
+  ports:
+  - protocol: TCP
+    name: web
+    port: 8080
+    targetPort: 8080
+  selector:
+    k8s-app: alertmanager-dingtalk-webhook
+---
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: alertmanager-dingtalk-webhook
+  namespace: monitoring
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        k8s-app: alertmanager-dingtalk-webhook
+        name: alertmanager-dingtalk-webhook
+    spec:
+      containers:
+      - image: harbor.ymmoa.com/monitoring/alertmanager-dingtalk-webhook:0.3.0
+        name: alertmanager-dingtalk-webhook
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "1Gi"
+        ports:
+        - containerPort: 8080
+          name: web
+        readinessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 600
+          periodSeconds: 20
+        command:
+        - /bin/webhook
+        - -defaultRobot=https://oapi.dingtalk.com/robot/send?access_token=aa71dc7c9cdbc82fc70aa27ebcd850870e911b3990293fa58c1a7bbed525ff7d
